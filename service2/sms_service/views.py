@@ -4,28 +4,34 @@ from rest_framework.response import Response
 
 from .models import SMS, Room
 from .tasks import send_message
-from .permissions import MyAuthenticated
 from .serializers import SMSSerializer, RoomSerializer
 
 
 class SMSViewSet(viewsets.ViewSet):
     serializer_class = SMSSerializer
-    permission_classes = [MyAuthenticated]
 
     def create(self, request):
         token = request.COOKIES.get('access')
-        response = requests.post('http://127.0.0.1:8000/verify', json={'token': token})
+
+        if token is None:
+            return Response('В доступе отказано', status=status.HTTP_400_BAD_REQUEST)
+
+        response = requests.post('http://service1:8000/verify', json={'token': token})
+        if response.status_code == 401:
+            return Response('В доступе отказано', status=status.HTTP_400_BAD_REQUEST)
+
         try:
             good_user = request.data['receiver']
         except KeyError:
             return Response('Укажите получателя (поле "receiver")', status=status.HTTP_400_BAD_REQUEST)
 
-        response2 = requests.get('http://127.0.0.1:8000/users/' + good_user)
+        response2 = requests.get('http://service1:8000/users/' + good_user)
         good_user_id = response2.json()['id']
         bad_user_id = response.json()['id']
-        response3 = requests.get('http://127.0.0.1:8000/get_blist/' + str(good_user_id) + '/' + str(bad_user_id))
+        response3 = requests.get('http://service1:8000/get_blist/' + str(good_user_id) + '/' + str(bad_user_id))
         if response3.status_code == 404:
             room = Room.objects.filter(receiver=request.data['receiver']).first()
+            print('ROOM', room)
 
             try:
                 content = request.data['text']
