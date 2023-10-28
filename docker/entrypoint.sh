@@ -13,7 +13,6 @@ fi
 
 cd service2
 source ../venv/bin/activate
-#python manage.py flush --no-input
 sleep 30
 python manage.py migrate
 
