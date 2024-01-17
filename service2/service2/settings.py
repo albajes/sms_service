@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'sms_service.middleware.AuthMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -144,3 +145,12 @@ CELERY_TASK_QUEUES = {
         'binding_key': 'data_queue',
     }
 }
+
+
+service1 = os.environ.get('SERVICE_1_NAME')
+port1 = os.environ.get('PORT_1')
+
+class services:
+    service_1_verify = f'http://{service1}:{port1}/verify'
+    service_1_users = f'http://{service1}:{port1}/users/'
+    service_1_blist = f'http://{service1}:{port1}/get_blist/'

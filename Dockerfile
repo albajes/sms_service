@@ -14,12 +14,12 @@ RUN apk update \
 
 # install dependencies
 RUN pip install --upgrade pip
-COPY /service2/service2/requirements.txt /app2/
+COPY service2/requirements.txt /app2/
 RUN pip install -r requirements.txt
 
-ADD /service2/service2 /app2/service2
-ADD /service2/docker /app2/docker
-ADD /service2/venv /app2/venv
+ADD service2 /app2/service2
+ADD docker /app2/docker
+ADD venv /app2/venv
 
 RUN chmod +x /app2/docker/entrypoint.sh
 RUN chmod +x /app2/docker/worker-entrypoint.sh
